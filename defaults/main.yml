@@ -1,0 +1,6 @@
+vault_dir: /etc/vault.d
+vault_bin_dir: /usr/local/bin
+
+VAULT_ADDR: "https://{{ inventory_hostname }}:8200"
+VAULT_API_ADDR: "https://{{ inventory_hostname }}:8200"
+DBUS_SESSION_BUS_ADDRESS: /dev/null

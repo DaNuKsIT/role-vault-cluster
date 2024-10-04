@@ -1,0 +1,39 @@
+---
+- name: Install necessary packages
+  apt:
+    update_cache: yes
+    name:
+      - jq 
+      - unzip
+
+- name: OpenSearch Prepare | Edit .bashrc
+  lineinfile:
+    dest: "/root/.bashrc"
+    line: "{{ item }}"
+    create: yes
+  with_items:
+    - "export VAULT_ADDR=https://{{ inventory_hostname }}:8200"
+    - "export VAULT_API_ADDR=https://{{ inventory_hostname }}:8200"
+    - "export DBUS_SESSION_BUS_ADDRESS=/dev/null"
+
+- name: Create vault directory 
+  ansible.builtin.file:
+    path: "{{ vault_dir }}" 
+    state: directory
+    mode: '0755'
+
+- name: Create vault-data directory 
+  ansible.builtin.file:
+    path: "{{ vault_dir }}/raft-{{ role }}" 
+    state: directory
+    mode: '0755'
+  when: role != "init"
+
+- name: OpenSearch Prepare | Edit .bashrc for master and workers
+  lineinfile:
+    dest: "/root/.bashrc"
+    line: "{{ item }}"
+    create: yes
+  with_items:
+    - "alias vault=\"VAULT_TOKEN=$(cat {{ vault_dir }}/master_token) vault\""
+  when: role != "init"

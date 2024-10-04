@@ -1,0 +1,15 @@
+---
+- import_tasks: prepare.yml
+  tags: [vault, prepare]
+
+- import_tasks: install.yml
+  tags: [vault, install]
+
+- import_tasks: config.yml
+  tags: [vault, config]
+
+- import_tasks: setup-cluster.yml
+  tags: [vault, setup, cluster, setup-cluster]
+
+#- import_tasks: run.yml
+#  tags: [vault, run]

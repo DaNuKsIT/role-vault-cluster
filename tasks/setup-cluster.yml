@@ -1,0 +1,85 @@
+---
+- name: Vault Config | Init cluster
+  args:
+    chdir: "{{ vault_dir }}"
+  shell: |
+    export VAULT_ADDR=https://{{ inventory_hostname }}:8200
+    export VAULT_API_ADDR=https://{{ inventory_hostname }}:8200
+    export DBUS_SESSION_BUS_ADDRESS=/dev/null
+
+    ./cluster.sh setup init
+  when: role == 'init'
+
+
+- name: Vault Config | Get root token
+  slurp:
+    src: "{{ vault_dir }}/root_token"
+  register: root_token
+  when: role == 'init'
+
+- name: Vault Config | Set root token for other
+  set_fact:
+    root_token: "{{ root_token }}"
+  delegate_facts: true
+  delegate_to: localhost
+  when: role == 'init'
+
+- name: Vault Config | Copy root token on servers 
+  copy:
+    content: "{{ hostvars['localhost'].root_token['content'] | b64decode }}"
+    dest: "{{ vault_dir }}/root_token"
+  when: role != 'init'
+
+
+- name: Vault Config | Init master 
+  args:
+    chdir: "{{ vault_dir }}"
+  shell: |
+    export VAULT_ADDR=https://{{ inventory_hostname }}:8200
+    export VAULT_API_ADDR=https://{{ inventory_hostname }}:8200
+    export DBUS_SESSION_BUS_ADDRESS=/dev/null
+
+    ./cluster.sh setup master 
+  when: role == 'master'
+
+- name: Vault Config | Get master token
+  slurp:
+    src: "{{ vault_dir }}/master_token"
+  register: master_token
+  when: role == 'master'
+
+- name: Vault Config | Set master token for other
+  set_fact:
+    master_token: "{{ master_token }}"
+  delegate_facts: true
+  delegate_to: localhost
+  when: role == 'master'
+
+- name: Vault Config | Copy master token on workers 
+  copy:
+    content: "{{ hostvars['localhost'].master_token['content'] | b64decode }}"
+    dest: "{{ vault_dir }}/master_token"
+  when: role == 'worker'
+
+
+- name: Vault Config | Init workers
+  args:
+    chdir: "{{ vault_dir }}"
+  shell: |
+    export VAULT_ADDR=https://{{ inventory_hostname }}:8200
+    export VAULT_API_ADDR=https://{{ inventory_hostname }}:8200
+    export DBUS_SESSION_BUS_ADDRESS=/dev/null
+
+    VAULT_TOKEN=$(cat master_token) ./cluster.sh setup worker
+  when: role == 'worker'
+
+- name: Vault Config | Cluster status  
+  args:
+    chdir: "{{ vault_dir }}"
+  shell: |
+    export VAULT_ADDR=https://{{ inventory_hostname }}:8200
+    export VAULT_API_ADDR=https://{{ inventory_hostname }}:8200
+    export DBUS_SESSION_BUS_ADDRESS=/dev/null
+
+    ./cluster.sh status 
+  when: role != 'init'

@@ -1,0 +1,24 @@
+---
+- name: Vault Install | Check if zip is downloaded
+  stat:
+    path: "vault_linux_amd64.zip"
+  register: zip_result
+
+- name: Vault Install | Check if vault is installed
+  stat:
+    path: "{{ vault_bin_dir }}/vault"
+  register: bin_result
+
+- name: Copy zip archive
+  copy:
+    src: vault_1.17.6_linux_amd64.zip
+    dest: /tmp/vault_linux_amd64.zip 
+  when: not zip_result.stat.exists and not bin_result.stat.exists
+
+- name: Install vault 
+  shell: |
+    cd /tmp
+    unzip vault_linux_amd64.zip
+    mv vault "{{ vault_bin_dir }}/" 
+    rm -f vault_linux_amd64.zip
+  when: not bin_result.stat.exists
