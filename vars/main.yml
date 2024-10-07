@@ -1,0 +1,2 @@
+TLS_CERT_FILE: /etc/ssl/keys/cert.crt
+TLS_KEY_FILE: /etc/ssl/keys/key.key

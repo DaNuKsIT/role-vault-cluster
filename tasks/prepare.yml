@@ -24,7 +24,14 @@
 
 - name: Create vault-data directory 
   ansible.builtin.file:
-    path: "{{ vault_dir }}/raft-{{ role }}" 
+    path: "{{ vault_dir }}/data-init" 
+    state: directory
+    mode: '0755'
+  when: role == "init"
+
+- name: Create vault-data directory 
+  ansible.builtin.file:
+    path: "{{ vault_dir }}/data" 
     state: directory
     mode: '0755'
   when: role != "init"

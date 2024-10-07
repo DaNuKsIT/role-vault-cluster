@@ -35,7 +35,7 @@
   vars:
     hostname_init_server: "{{ hostvars['localhost'].hostname_init_server }}"
   template:
-     src: config-master.hcl
+     src: config-worker.hcl
      dest: "{{ vault_dir }}/config-master.hcl"
      mode: 644
   when: role == 'master'
@@ -43,9 +43,10 @@
 - name: Vault Config | Copying configuration file for worker server
   vars:
     hostname_init_server: "{{ hostvars['localhost'].hostname_init_server }}"
-    hostname_master_server: "{{ hostvars['localhost'].hostname_master_server }}"
   template:
      src: config-worker.hcl
      dest: "{{ vault_dir }}/config-worker.hcl"
      mode: 644
   when: role == 'worker'
+
+

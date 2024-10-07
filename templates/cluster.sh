@@ -157,7 +157,7 @@ function clean {
     fi
   done
 
-  for database_dir in {{ vault_dir }}/raft-master {{ vault_dir }}/raft-worker ; do
+  for database_dir in {{ vault_dir }}/data {{ vault_dir }}/data-init; do
     if [[ -d "$database_dir" ]] ; then
       printf "\n%s" \
         "Removing database in $database_dir"

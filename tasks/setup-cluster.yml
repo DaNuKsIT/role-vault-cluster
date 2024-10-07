@@ -73,13 +73,14 @@
     VAULT_TOKEN=$(cat master_token) ./cluster.sh setup worker
   when: role == 'worker'
 
-- name: Vault Config | Cluster status  
-  args:
-    chdir: "{{ vault_dir }}"
-  shell: |
-    export VAULT_ADDR=https://{{ inventory_hostname }}:8200
-    export VAULT_API_ADDR=https://{{ inventory_hostname }}:8200
-    export DBUS_SESSION_BUS_ADDRESS=/dev/null
-
-    ./cluster.sh status 
-  when: role != 'init'
+#- name: Vault Config | Cluster status  
+#  args:
+#    chdir: "{{ vault_dir }}"
+#  shell: |
+#    export VAULT_ADDR=https://{{ inventory_hostname }}:8200
+#    export VAULT_API_ADDR=https://{{ inventory_hostname }}:8200
+#    export DBUS_SESSION_BUS_ADDRESS=/dev/null
+#
+#    sleep 2
+#    ./cluster.sh status 
+#  when: role != 'init'
